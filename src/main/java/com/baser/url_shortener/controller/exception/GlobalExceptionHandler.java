@@ -20,4 +20,9 @@ public class GlobalExceptionHandler {
         log.error("UrlAlreadyTakenException occurred: {}", ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
     }
+    @ExceptionHandler(UrlNotFoundException.class)
+    public ResponseEntity<Object> handleUrlNotFoundException(UrlNotFoundException ex) {
+        log.error("UrlNotFoundException occurred: {}", ex.getMessage());
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
 }

@@ -31,7 +31,8 @@ public class Url {
     }
 
     public Url(String shortUrl, String longUrl, Integer ttlDay) {
-        this.shortUrl = shortUrl;
+        this();
+         this.shortUrl = shortUrl;
         this.longUrl = longUrl;
         this.ttlDay = ttlDay;
     }

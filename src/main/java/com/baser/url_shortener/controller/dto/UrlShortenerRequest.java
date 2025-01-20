@@ -20,4 +20,12 @@ public class UrlShortenerRequest {
     public void setTtlDay(Integer ttlDay) {
         this.ttlDay = ttlDay;
     }
+
+    @Override
+    public String toString() {
+        return "UrlShortenerRequest{" +
+                "longURL='" + longURL + '\'' +
+                ", ttlDay=" + ttlDay +
+                '}';
+    }
 }
