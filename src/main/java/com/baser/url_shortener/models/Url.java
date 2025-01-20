@@ -20,7 +20,7 @@ public class Url {
     private String shortUrl;
     @Column(nullable = false)
     private String longUrl;
-    private Integer ttlDay;
+    private long expirationTime;
     @CreatedDate
     private LocalDateTime createdAt;
     @LastModifiedDate
@@ -30,11 +30,11 @@ public class Url {
         this.id = UUID.randomUUID().toString();
     }
 
-    public Url(String shortUrl, String longUrl, Integer ttlDay) {
+    public Url(String shortUrl, String longUrl, long expirationTime) {
         this();
-         this.shortUrl = shortUrl;
+        this.shortUrl = shortUrl;
         this.longUrl = longUrl;
-        this.ttlDay = ttlDay;
+        this.expirationTime = expirationTime;
     }
 
     public String getId() {
@@ -61,12 +61,12 @@ public class Url {
         this.longUrl = longUrl;
     }
 
-    public Integer getTtlDay() {
-        return ttlDay;
+    public long getExpirationTime() {
+        return expirationTime;
     }
 
-    public void setTtlDay(Integer ttlDay) {
-        this.ttlDay = ttlDay;
+    public void setExpirationTime(long expirationTime) {
+        this.expirationTime = expirationTime;
     }
 
     public LocalDateTime getCreatedAt() {

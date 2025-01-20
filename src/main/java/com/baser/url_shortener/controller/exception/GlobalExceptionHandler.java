@@ -17,12 +17,17 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(UrlAlreadyTakenException.class)
     public ResponseEntity<Object> handleUrlAlreadyTakenException(UrlAlreadyTakenException ex) {
-        log.error("UrlAlreadyTakenException occurred: {}", ex.getMessage());
+        log.info("UrlAlreadyTakenException occurred: {}", ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
     }
     @ExceptionHandler(UrlNotFoundException.class)
     public ResponseEntity<Object> handleUrlNotFoundException(UrlNotFoundException ex) {
-        log.error("UrlNotFoundException occurred: {}", ex.getMessage());
+        log.info("UrlNotFoundException occurred: {}", ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(UrlExpiredException.class)
+    public ResponseEntity<Object> handleUrlExpiredException(UrlExpiredException ex) {
+        log.info("UrlExpiredException occurred: {}", ex.getMessage());
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

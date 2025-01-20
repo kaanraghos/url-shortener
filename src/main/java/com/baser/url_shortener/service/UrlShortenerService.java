@@ -2,6 +2,7 @@ package com.baser.url_shortener.service;
 
 import com.baser.url_shortener.controller.dto.UrlShortenerRequest;
 import com.baser.url_shortener.controller.exception.UrlAlreadyTakenException;
+import com.baser.url_shortener.controller.exception.UrlExpiredException;
 import com.baser.url_shortener.controller.exception.UrlNotFoundException;
 import com.baser.url_shortener.models.Url;
 import com.baser.url_shortener.repository.UrlRepository;
@@ -18,7 +19,9 @@ import static com.baser.url_shortener.service.HashUtils.generateHash;
 public class UrlShortenerService {
 
     public static final String DOMAIN="http://localhost:8080/";
-    public static final String SHORT_URL_NOT_FOUND_SHOR_URL = "Short URL not found! ShorT url: %s";
+    public static final String SHORT_URL_NOT_FOUND_SHORT_URL = "Short URL not found! ShorT url: %s";
+    public static final String SHORT_URL_EXPIRED = "Short URL has expired! ShorT url: %s";
+    public static final int DAY_TO_MILIS = 24 * 60 * 60 * 1000;
 
     private final UrlRepository repository;
 
@@ -39,7 +42,7 @@ public class UrlShortenerService {
         String hash = generateHash(longUrl);
         String shortCode = hash.substring(0, 8);
 
-        Url url = new Url(shortCode, longUrl, request.getTtlDay());
+        Url url = new Url(shortCode, longUrl, System.currentTimeMillis()+ (request.getTtlDay() * DAY_TO_MILIS));
 
         repository.save(url);
         return DOMAIN + shortCode;
@@ -47,11 +50,15 @@ public class UrlShortenerService {
     public void deleteShortUrl(String shortenUrl) {
         Optional<Url> optionalUrl = repository.findByShortUrl(shortenUrl);
         if (optionalUrl.isEmpty()) {
-            log.info("Url to be deleted not found. {}", shortenUrl);
-            throw new UrlNotFoundException(String.format(SHORT_URL_NOT_FOUND_SHOR_URL, shortenUrl));
+            log.error("Url to be deleted not found. {}", shortenUrl);
+            throw new UrlNotFoundException(String.format(SHORT_URL_NOT_FOUND_SHORT_URL, shortenUrl));
         }
 
-        repository.delete(optionalUrl.get());
+        Url url = optionalUrl.get();
+        url.setExpirationTime(System.currentTimeMillis());
+        log.info("Url is now expired. {}", shortenUrl);
+
+        repository.save(url);
     }
 
     public String getLongUrlByShortUrl(String shortenUrl) {
@@ -59,10 +66,15 @@ public class UrlShortenerService {
 
         if (optionalUrl.isEmpty()) {
             log.info("Url has not found. {}", shortenUrl);
-            throw new UrlNotFoundException(String.format(SHORT_URL_NOT_FOUND_SHOR_URL, shortenUrl));
+            throw new UrlNotFoundException(String.format(SHORT_URL_NOT_FOUND_SHORT_URL, shortenUrl));
         }
 
-        return optionalUrl.get().getLongUrl();
+        Url url = optionalUrl.get();
+        if (url.getExpirationTime()<System.currentTimeMillis()) {
+            log.info("Url requested has expired. {}", shortenUrl);
+            throw new UrlExpiredException(String.format(SHORT_URL_EXPIRED, shortenUrl));
+        }
+        return url.getLongUrl();
     }
 
 
