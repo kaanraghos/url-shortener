@@ -5,6 +5,11 @@ public class UrlShortenerRequest {
     private String longURL;
     private Integer ttlDay;
 
+    public UrlShortenerRequest(String longURL, Integer ttlDay) {
+        this.longURL = longURL;
+        this.ttlDay = ttlDay;
+    }
+
     public String getLongURL() {
         return longURL;
     }
